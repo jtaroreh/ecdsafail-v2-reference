@@ -1,0 +1,171 @@
+@ECDSA.fail Challenge Project the circuit competition is open now, and it closes Thursday 11:59p, attached are the rules and guide (can read or pass onto ur agent)
+
+
+To enter, fork jtaroreh/ecdsafail-v2-reference, add circuits/<your GitHub login>/<name>.method.json.gz, and open a pull request against main. Only circuits/ and qec/ can change, so keep anything else out of the branch. The description is your note, and the template lays it out. A bot looks every 2 minutes, uploads your circuit under your board name, and keeps one comment on the pull request up to date. You run no upload.
+
+The line to beat is the reference, at T 50,465,933 and qubit-time 164,135,627,418. There are two awards, lowest T and lowest qubit-time. To win either, an entry must be lower than the reference on one of those and no higher on the other.
+
+Three things to know. You get 5 entries a day, and a new commit is a new entry, so push only when the circuit changed. Every pull request is public, so build on each other's work, and credit it in built_on. And you need no token: try your circuit locally first with qcheck.py, and the guide has the install lines.
+
+
+Circuit competition rules
+Until Thursday night, build the cheapest controlled point addition on secp256k1 you can. Exact circuits only. An entry must pass every input the board tests, and it ranks on its raw costs. Build on each other's circuits.
+
+Results are sampled and unqualified. They measure one addition, not an attack, and a pass doesn't prove a circuit is exact. Start with MEMBER-GUIDE.md for the circuit format, local checks, and limits.
+
+When
+It opened when the bot started, Saturday 2026-11-07 at about 12:00 PM PST, and it closes Thursday 2026-11-12 at 11:59 PM PST. Open your last pull request by 11:30 PM that night. A round that publishes after the close doesn't count, and a full round can take about 20 minutes. The bot stops uploading at the close.
+
+A passing entry published from 2026-11-06 12:00 AM PST also counts, so a pull request opened before the start isn't lost. A failing entry published before the start doesn't count.
+
+Entering
+You enter by opening a pull request. You run no upload. A bot uploads your circuit to the board under your board name, and the pull request credits you on GitHub.
+
+Fork jtaroreh/ecdsafail-v2-reference. Start from main, or from anyone's entry with gh pr checkout <number>.
+Add one circuit at circuits/<your GitHub login>/<name>.method.json.gz, the gzip of your exact JSON. Generator changes that made it go in qec/. Nothing outside circuits/ and qec/ can change.
+Open a pull request against main. Its description is your note, and the template lays it out.
+The bot looks every 2 minutes and keeps one comment on your pull request up to date.
+
+The comment says	What it means
+Waiting for the operator	Your login isn't on the list yet. Nothing uploads
+A list of problems	The note or the file needs fixing. Nothing uploads, and it's checked again after you fix it
+Over the limit	5 entries already today. It retries after midnight PST
+Window closed	It wasn't uploaded before the close, so it isn't an entry
+Queued	Waiting to upload, or uploaded and waiting for its round
+Failed	The reason, and whether a boundary case failed. The pull request stays open for others to build on, or you can close it
+Passed	Your raw costs, your layer, and what you need to beat
+Listed, not ranked	It can't rank, such as a same-cost entry or no valid note. The reason is given
+Best	It's the new best, and the bot merges it to main
+Superseded	It reached main, and something later beat it
+No entry	The pull request is closed, and it has earlier heads to list. With none, its last comment stays as it was
+The limit. 5 entries per member per day, by the PST day the round publishes. Entries are counted in round order, and by evaluation id inside a round. A failed or timed-out entry still uses its slot. A rejected upload or an alias has no board row, so it reads as failed and uses no slot. A draft pull request is treated as open, so it uploads.
+
+A new commit is a new entry. It uses another slot, so push only when the circuit changed. A commit that leaves the circuit's bytes the same is an alias, and the bot reports it as failed.
+
+The file. Counted from where your branch left main, a pull request changes exactly one file in your own folder under circuits/, and it can also change qec/. A change to anything else reads as a problem, names the file, and uses no slot, so keep scripts and other helpers out of the entry. If the bot names a file you never touched, merge main into your branch. Inside circuits/ and qec/, only plain files can change, with no symlinks or submodules. main keeps everything else from its own tree. To enter a second circuit, replace that file or open a new pull request from main. Other members' folders can differ, so building on an entry is fine. Changes to .github/ aren't allowed, and that includes one a later commit undoes, so rewrite the branch without it. If the bot says this and you never touched .github/, merge main into your branch. The repository holding your commit must read under 500 MiB.
+
+The note. 5 KiB to 100 KiB, with the fields and sections in the template. Leave the evaluation line alone, because the bot fills it in. built_on is reference-c4, or the exact string the bot printed on the entry you built on, comma separated. That entry's round must have published, and it must have a board row, so a rejected upload or an alias can't be cited. The note on file is the description at the moment the bot uploads, and later edits don't change it. If the bot lost the board's answer to an upload, it files the note from your description when it next finds the row, which is the one case where a later edit counts. A row whose note reaches the bot's archive over 24 hours after the round published is listed with no valid note, and it can't rank or reach main.
+
+Building on another branch. Start from main, or from a pull request whose comment already shows a verdict. If your entry reaches main while another member's pull request in its history hasn't been uploaded yet, GitHub marks theirs merged, and the bot never uploads it.
+
+Check first. python3 qcheck.py mine.method.json runs the same test locally and checks the upload limits, so check a circuit before you spend an entry. MEMBER-GUIDE.md has the install lines. Every upload stays in the board's store for good.
+
+No practice uploads. Use qcheck.py to try a circuit, and enter by pull request. An upload you make yourself with a token isn't an entry, so don't make one. A circuit already on the board can't be entered with the same bytes, because the same bytes under another name are an alias, with no test and no row. To enter one, change its bytes first. Two X gates on a scratch wire that's idle at the end of the circuit does that without changing its costs. Run qcheck.py again to confirm.
+
+Measurement cleanup isn't available, because the test refuses R and HMR.
+
+Sharing
+Every pull request is public from the moment you open it, so take anything you like. That cuts both ways: until the bot uploads your circuit, someone else could enter it first, so fix your note before you open the pull request. gh pr checkout <number> gets any entry, open or merged. Copying a circuit unchanged gets you nothing, because the first uploader owns it.
+
+main holds the best circuit: the lowest qubit-time among entries the bot filed with a valid note, if that qubit-time is below the reference's. A tie goes to the entry that got there first, as under Ties below. So the layer printed in its comment can read higher than 1, if a later entry with the same qubit-time and a lower T sits below it, or a row that can't be best does. The bot merges it for you, and the pull request reads as merged. This test is on qubit-time alone, so an entry in main hasn't necessarily beaten the reference for an award.
+
+The bot keeps the circuit and note it uploaded for each entry, and the final audit reads those.
+
+Scoring
+An entry ranks only if it passed testing. That means 0 of the 10 boundary cases failed, 0 of the 10,000 seeded inputs failed, and every other check passed, such as running the circuit in reverse. On the board it has a row in entries, and its status reads TESTED_UNQUALIFIED.
+
+A FAILED entry is listed with its failure counts and isn't ranked, however low its costs are.
+
+Entries rank on raw lowered_t and qubit_time, in Pareto layers by the board's rule, with no single score. One entry outranks another when it's no worse on both costs and lower on at least one. Costs compare exactly, so a difference of 1 decides. Layer 1 holds every entry nothing outranks. Layers cover competition entries only and leave the reference out, so an entry can sit on layer 1 without beating the reference.
+
+Same cost. An entry with the same T and qubit-time as an earlier ranked entry by another member, or as the reference, is listed as SAME_COST and isn't ranked. It keeps its daily slot. Entries with equal costs by one member share a layer.
+
+The line to beat is the reference circuit, at T 50,465,933 and qubit-time 164,135,627,418. The reference is the baseline and can't win.
+
+The final audit
+A circuit that fails rarely can pass one draw, so the final ranking uses a bigger sample. After the close, the top 10 entries on each raw cost get 100 more checks, 1,000,000 inputs in all, with at most 3 from any one member on each list. The roots come from drand quicknet round 33917792, the first pulse at the close, so anyone can fetch it.
+
+The audit is pass or fail. Any failed check on any root drops the entry, whether it's a seeded input, a boundary case, or another check such as running the circuit in reverse. A dropped entry's audit slot isn't refilled. Costs don't change. The entries that survive rank in Pareto layers on raw costs, and that is the final ranking. After the close the operator publishes the archive the audit reads, so anyone with qcb can rerun audit.py and get the same numbers.
+
+Awards
+There are two awards, and only these two.
+
+Lowest T. The lowest T among entries that beat the reference.
+Lowest qubit-time. The lowest qubit-time among entries that beat the reference.
+The reference is the worst case, so an entry must beat it to win. Beating it means lower on at least one raw cost and no higher on the other. Layers leave the reference out, so this is a separate test. A trade-off doesn't qualify: an entry with lower qubit-time but more T than the reference can't win, even on layer 1. If no entry beats the reference, nobody takes either award.
+
+The final ranking decides both. Results name each winner's built on chain, so the people it came from get credit.
+
+Ties. A tie goes to the entry that got there first, in board order: the earlier round, and in one round the lower evaluation id. A later entry with the same qubit-time as the entry on main doesn't take main, and its comment names the earlier entry. For each award, a later entry with the same cost as an earlier entry that also beats the reference doesn't take the award. A tied entry keeps its row and its layer in the final ranking.
+
+Standings
+Standings come from public data, so you can read them yourself:
+
+python3 -I standings.py https://ecdsabreak.taroreh.com
+It needs a recent Python, and it was tested on 3.14. This command doesn't apply the note rule, because the notes are in the bot's archive, so an entry uploaded directly can show here and be NO_NOTE in the operator's table. The operator's posted table applies it.
+
+Building and checking a circuit
+You enter by opening a pull request, and COMPETITION-RULES.md says how. This guide covers what a circuit must do, how to check one on your own machine, and how to read a result. Nothing here needs a token.
+
+The board is diagnostic. A pass means your circuit was right on about 10,000 sampled inputs. It proves no correctness, and it is not a qualification.
+
+What a circuit must do
+The circuit adds the secp256k1 generator G to a point when a control wire is 1, and leaves the point alone when it is 0:
+
+|c>|x, y>  ->  |c>|(x, y) + c * G>
+Registers. Exactly one wire with role CONTROL, and exactly 512 wires with role ACCUMULATOR. The first 256 hold x and the last 256 hold y, least significant bit first.
+The point at infinity is (0, 0).
+Workspace. A wire with role SCRATCH, or in no register, starts at 0 and must end at 0. A wire left set fails under workspace_garbage.
+Borrowed wires. A wire with role BORROWED, ADDEND, or ADDRESS starts as noise the test chooses, and must end as it started. So must the control wire. A change fails under preserved_register_corruption.
+Other failures. A wrong output fails under coordinate_mismatch, and a wrong phase under logical_phase_mismatch.
+Inputs. Ten fixed boundary cases, B0 to B9: infinity, G, -G, 2G, and -2G, each with control 0 and 1. Then 10,000 draws from the round's challenge.
+The file. A circuit is one JSON object:
+
+num_wires, registers, each {"name", "role", "wires"}, and operations.
+An operation is {"op": "X", "target": n}, CX or CZ with control and target, CCX or CCZ with control1, control2, and target, SWAP with wire1 and wire2, Z with target, NEG, or CONTROLLED_NEG with control.
+definitions is an optional list of subcircuits, each {"arity": n, "operations": [...]}. Call one with {"call": index, "wires": [...], "inverse": false}, which binds its local wire i to wires[i].
+Limits. 100 MiB per upload, 4,096 wires, a call depth of 32, 21,696,718 expanded operations, 3,250,000,000 T as 7 per CCX or CCZ, and 120 s for one test. R and HMR are refused.
+
+Check a circuit on your machine
+You need curl and python3, and no network once you have the tools. On a Mac with Apple silicon, run this in your working folder. On any other machine, ask the operator for the build.
+
+B=https://github.com/jtaroreh/ecdsafail-v2-reference/releases/download/qcb-8376098
+curl -fsSL $B/install-qcb.sh | QCB_INSTALL_DIR=. sh
+curl -fsSLO $B/qcheck.py
+curl -fsSLO $B/wrap.py
+This starter is wrong on purpose. It flips one accumulator wire, so every case fails, and it shows you the whole path:
+
+python3 - <<'EOF'
+import json
+registers = [{"name": "control", "role": "CONTROL", "wires": [0]}, {"name": "accumulator", "role": "ACCUMULATOR", "wires": list(range(1, 513))}]
+json.dump({"num_wires": 513, "registers": registers, "definitions": [], "operations": [{"op": "X", "target": 7}]}, open("my-circuit.json", "w"))
+EOF
+python3 wrap.py my-circuit.json mine.method.json
+python3 qcheck.py mine.method.json
+wrap.py puts a circuit into the format the board takes. qcheck.py runs the board's test on three random roots, checks every upload limit, and compares the costs to the line to beat. It ends in meets the bar or does not meet the bar.
+
+meets the bar means all three roots passed and the file fits every limit. It doesn't mean you beat the reference, which also meets the bar. The against the line row tells you that. An award needs one number negative and the other no higher than zero.
+
+A local pass leaves two things to the board. The 120 s limit runs on the board's machine, so a circuit that only just fits can come back TIMED_OUT. And your roots aren't the round's root, so a circuit that fails rarely can pass here by luck.
+
+For one root, use qcb diagnostic check. Any 64 hex digits work as the challenge, and a published round's challenge_root reproduces that round.
+
+./qcb diagnostic check mine.method.json --challenge-root 0000000000000000000000000000000000000000000000000000000000000001
+It prints FAILED: 10 of 10 boundary cases and 10000 of 10000 seeded inputs failed., or PASSED with the same counts, and the circuit's cost. Add --json for the full report. ./qcb diagnostic cases --challenge-root <64 hex> --inputs 5 --first 5 prints the inputs and expected outputs.
+
+To enter it, gzip the JSON that wrap.py wrote, put it in your fork, and open the pull request:
+
+gzip -c mine.method.json > circuits/<your GitHub login>/<name>.method.json.gz
+Read a result
+The bot's comment on your pull request tells you where an entry stands. A round takes about 2 minutes on a quiet board, and up to about 20 minutes when it's full. These reads go deeper, and they're public.
+
+The board.
+
+curl -s https://ecdsabreak.taroreh.com/v2/tested | python3 -c '
+import json, sys
+b = json.load(sys.stdin)
+print(b["board_status"], "entries", b["entries_total"], "attempts", b["attempts_total"])
+for e in sorted(b["entries"], key=lambda e: (e["pareto_layer"], e["lowered_t"])):
+    print("PASS", e["pareto_layer"], e["user_id"], e["method_name"], "T", e["lowered_t"], "qubit-time", e["qubit_time"], "round", e["round_id"])
+for a in b["attempts"][-10:]:
+    print("FAIL", a["user_id"], a["method_name"], a["evaluation_id"], "boundary", a["boundary_failing"], "seeded", a["seeded_failing"], "round", a["round_id"])
+'
+lowered_t and qubit_time are the two ranked costs. A lower layer is better, and layer 1 is the frontier. A practice row can show here and not count, so COMPETITION-RULES.md says which rows rank. A long board comes in pages: pass ?entries_from=<entries_next>&attempts_from=<attempts_next>&board_revision=<board_revision>. A 409 means the board moved while you paged, so start again from the first page.
+
+A failure. Take the eval-... id from the board's FAIL row:
+
+curl -s https://ecdsabreak.taroreh.com/v2/status/eval-YOUR-ID | python3 -c '
+import json, sys
+s = json.load(sys.stdin)
+d = s["details"]
+report = d.get("test_report") or {}
